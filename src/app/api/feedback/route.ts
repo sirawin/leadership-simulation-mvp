@@ -49,6 +49,10 @@ You must respond with a valid JSON object in this exact structure:
 
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.CLAUDE_API_KEY) {
+      throw new Error('CLAUDE_API_KEY environment variable is not set')
+    }
+
     const { conversationHistory, selectedOption } = await req.json()
 
     if (!conversationHistory || conversationHistory.length === 0) {

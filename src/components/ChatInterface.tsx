@@ -19,16 +19,13 @@ export function ChatInterface() {
   }, [state.conversationHistory])
 
   useEffect(() => {
-    if (state.conversationHistory.length === 0) {
+    if (state.conversationHistory.length === 0 && state.phase === 'conversation') {
       // Send initial message from Mei when conversation starts
-      handleInitialMessage()
+      const initialMessage = getInitialMeiMessage(state.selectedOption || 1)
+      addMessage('assistant', initialMessage)
     }
-  }, [])
+  }, [state.conversationHistory.length, state.phase, state.selectedOption, addMessage])
 
-  const handleInitialMessage = async () => {
-    const initialMessage = getInitialMeiMessage(state.selectedOption || 1)
-    addMessage('assistant', initialMessage)
-  }
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || state.status !== 'active') return
@@ -57,12 +54,15 @@ export function ChatInterface() {
       
       if (data.message) {
         addMessage('assistant', data.message)
+      } else if (data.error) {
+        console.error('API Error:', data.error, data.details)
+        addMessage('assistant', `Error: ${data.error}. Please check the console for details.`)
       } else {
         addMessage('assistant', 'Sorry, I had trouble responding. Could you try again?')
       }
     } catch (error) {
       console.error('Chat error:', error)
-      addMessage('assistant', 'Sorry, there was a connection issue. Could you try again?')
+      addMessage('assistant', 'Sorry, there was a connection issue. Please check your API key configuration.')
     } finally {
       setIsLoading(false)
       textareaRef.current?.focus()

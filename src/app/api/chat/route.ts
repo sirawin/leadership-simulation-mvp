@@ -34,18 +34,29 @@ Do not solve the problem for them, but guide them to clarify their thinking, foc
 
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.CLAUDE_API_KEY) {
+      throw new Error('CLAUDE_API_KEY environment variable is not set')
+    }
+
     const { messages, selectedOption } = await req.json()
 
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      throw new Error('No messages provided')
+    }
+
     // Add context about the selected option to the first user message if needed
-    const contextualMessages = messages.map((msg: { role: string; content: string }, index: number) => {
+    const contextualMessages = messages.map((msg: { role: 'user' | 'assistant'; content: string }, index: number) => {
       if (index === 0 && msg.role === 'user') {
         const optionContext = getOptionContext(selectedOption)
         return {
-          ...msg,
+          role: msg.role,
           content: `${optionContext}\n\n${msg.content}`
         }
       }
-      return msg
+      return {
+        role: msg.role,
+        content: msg.content
+      }
     })
 
     const response = await anthropic.messages.create({
@@ -66,8 +77,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Chat API error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     return NextResponse.json(
-      { error: 'Failed to process chat message' },
+      { error: 'Failed to process chat message', details: errorMessage },
       { status: 500 }
     )
   }
