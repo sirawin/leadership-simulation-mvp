@@ -20,6 +20,31 @@ A web-based leadership simulation where users practice crucial conversations wit
 - **State Management**: React Context + useReducer
 - **Deployment**: Vercel
 
+## 📁 Project Structure
+
+```
+leadership-simulation-mvp/
+├── src/                    # Source code
+│   ├── app/               # Next.js app router
+│   ├── components/        # React components
+│   ├── contexts/         # React contexts
+│   └── lib/              # Utilities and types
+├── public/               # Static assets
+├── docs/                 # Documentation files
+│   ├── CLAUDE.md         # Original requirements
+│   ├── detailed-implementation-plan.md
+│   ├── mei-prompt-v0.md  # AI prompts
+│   └── feedback-prompt.md
+├── config/               # Configuration files
+│   ├── next.config.ts    # Next.js config
+│   ├── tailwind.config.ts # Tailwind config
+│   └── tsconfig.json     # TypeScript config
+├── package/              # Package management
+│   ├── package.json      # Dependencies
+│   └── package-lock.json # Lock file
+└── README.md             # This file
+```
+
 ## 🚀 Getting Started
 
 ### Prerequisites
